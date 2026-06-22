@@ -14,7 +14,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
 
-  const { products, loading } = useProducts({ categorySlug: selectedCategory, search })
+  const { products, loading, error } = useProducts({ categorySlug: selectedCategory, search })
   const { categories } = useCategories()
 
   // Stable debounced search — created once, never recreated on re-render
