@@ -238,6 +238,22 @@ CREATE POLICY "Super admins can manage profiles"
 --   TO authenticated USING (bucket_id = 'products');
 
 -- =============================================
+-- TABLE PRIVILEGES
+-- =============================================
+-- These grants are required in addition to RLS policies.
+-- RLS controls row-level access; GRANT controls table-level access.
+
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+
+-- Anon (guest customers): read store data, place orders
+GRANT SELECT ON products, categories TO anon;
+GRANT INSERT, SELECT ON orders TO anon;
+GRANT INSERT, SELECT ON order_items TO anon;
+
+-- Authenticated (admins): full access
+GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
+
+-- =============================================
 -- STOCK MANAGEMENT FUNCTION
 -- =============================================
 -- Atomically decrements product stock when an order is placed.

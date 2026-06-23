@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import { CheckCircle, Package, MapPin, Phone, User, ShoppingBag, Building2, Home } from 'lucide-react'
 import { getOrderById } from '../../hooks/useOrders'
 import { formatPrice, formatDate } from '../../utils/helpers'
@@ -8,12 +8,15 @@ import { ORDER_STATUSES } from '../../utils/constants'
 
 export default function OrderConfirmationPage() {
   const { id } = useParams()
-  const [order, setOrder] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const location = useLocation()
+  const [order, setOrder] = useState(location.state?.order || null)
+  const [loading, setLoading] = useState(!location.state?.order)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    // If order data was passed via navigation state, no DB fetch needed
+    if (location.state?.order) return
     if (!id) return
     getOrderById(id)
       .then(setOrder)

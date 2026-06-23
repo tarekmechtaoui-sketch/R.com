@@ -23,13 +23,18 @@ export default function AdminProductsPage() {
   const { products, loading, createProduct, updateProduct, deleteProduct } = useAdminProducts()
   const { categories } = useCategories()
   const [search, setSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(null)
 
-  const filtered = products.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = products.filter((p) => {
+    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
+    const matchCategory = categoryFilter === 'all' || p.category_id === categoryFilter
+    const matchStatus = statusFilter === 'all' || p.status === statusFilter
+    return matchSearch && matchCategory && matchStatus
+  })
 
   const handleSave = async (data) => {
     try {
@@ -67,7 +72,7 @@ export default function AdminProductsPage() {
         <AdminHeader title="Products" subtitle="Manage your product catalog" />
         <main className="p-6">
           {/* Toolbar */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="relative flex-1 max-w-sm">
               <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal-400" />
               <input
@@ -77,10 +82,36 @@ export default function AdminProductsPage() {
                 className="input-field pl-10"
               />
             </div>
-            <Button onClick={openCreate} className="shrink-0">
-              <Plus size={16} />
-              Add Product
-            </Button>
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {/* Category filter */}
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="input-field py-1.5 text-xs w-auto pr-8"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+
+            {/* Status filter */}
+            {['all', 'active', 'inactive', 'out_of_stock'].map((s) => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  statusFilter === s
+                    ? 'bg-charcoal text-white dark:bg-white dark:text-charcoal'
+                    : 'bg-white dark:bg-charcoal-800 text-charcoal-500 dark:text-charcoal-400 hover:bg-charcoal-100 dark:hover:bg-charcoal-700 border border-charcoal-200 dark:border-charcoal-700'
+                }`}
+              >
+                {s === 'all' ? 'All Status' : s === 'out_of_stock' ? 'Out of Stock' : s.charAt(0).toUpperCase() + s.slice(1)}
+              </button>
+            ))}
           </div>
 
           {/* Table */}

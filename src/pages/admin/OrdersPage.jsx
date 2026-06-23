@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eye, ChevronDown, Building2, Home } from 'lucide-react'
+import { Eye, ChevronDown, Building2, Home, Calendar } from 'lucide-react'
 import Sidebar from '../../components/admin/Sidebar'
 import AdminHeader from '../../components/admin/AdminHeader'
 import Modal from '../../components/ui/Modal'
@@ -15,9 +15,17 @@ const STATUS_OPTIONS = [
   ...Object.entries(ORDER_STATUSES).map(([value, { label }]) => ({ value, label })),
 ]
 
+const DATE_OPTIONS = [
+  { value: 'all', label: 'All Time' },
+  { value: 'today', label: 'Today' },
+  { value: 'week', label: 'Last 7 Days' },
+  { value: 'month', label: 'Last 30 Days' },
+]
+
 export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState('all')
-  const { orders, loading, updateOrderStatus } = useAdminOrders({ status: statusFilter })
+  const [dateFilter, setDateFilter] = useState('all')
+  const { orders, loading, updateOrderStatus } = useAdminOrders({ status: statusFilter, dateFilter })
   const [selectedOrder, setSelectedOrder] = useState(null)
 
   const handleStatusChange = async (orderId, newStatus) => {
@@ -39,8 +47,8 @@ export default function OrdersPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader title="Orders" subtitle="Manage customer orders" />
         <main className="p-6">
-          {/* Filter Tabs */}
-          <div className="flex gap-2 flex-wrap mb-6">
+          {/* Status Filter Tabs */}
+          <div className="flex gap-2 flex-wrap mb-3">
             {STATUS_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
@@ -48,6 +56,24 @@ export default function OrdersPage() {
                 className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
                   statusFilter === opt.value
                     ? 'bg-charcoal text-white dark:bg-white dark:text-charcoal'
+                    : 'bg-white dark:bg-charcoal-800 text-charcoal-500 dark:text-charcoal-400 hover:bg-charcoal-100 dark:hover:bg-charcoal-700 border border-charcoal-200 dark:border-charcoal-700'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Date Filter Row */}
+          <div className="flex items-center gap-2 flex-wrap mb-6">
+            <Calendar size={14} className="text-charcoal-400 shrink-0" />
+            {DATE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setDateFilter(opt.value)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  dateFilter === opt.value
+                    ? 'bg-navy text-white'
                     : 'bg-white dark:bg-charcoal-800 text-charcoal-500 dark:text-charcoal-400 hover:bg-charcoal-100 dark:hover:bg-charcoal-700 border border-charcoal-200 dark:border-charcoal-700'
                 }`}
               >
@@ -69,6 +95,7 @@ export default function OrdersPage() {
                     <tr className="text-left text-xs text-charcoal-400 uppercase tracking-wider border-b border-charcoal-100 dark:border-charcoal-700">
                       <th className="px-6 py-3 font-semibold">Customer</th>
                       <th className="px-6 py-3 font-semibold hidden md:table-cell">Wilaya</th>
+                      <th className="px-6 py-3 font-semibold hidden lg:table-cell">Delivery</th>
                       <th className="px-6 py-3 font-semibold hidden lg:table-cell">Items</th>
                       <th className="px-6 py-3 font-semibold">Total</th>
                       <th className="px-6 py-3 font-semibold">Status</th>
@@ -90,6 +117,17 @@ export default function OrdersPage() {
                           </td>
                           <td className="px-6 py-3 text-charcoal-500 dark:text-charcoal-400 hidden md:table-cell">
                             {order.wilaya}
+                          </td>
+                          <td className="px-6 py-3 hidden lg:table-cell">
+                            <div className="flex items-center gap-1.5 text-charcoal-500 dark:text-charcoal-400">
+                              {order.delivery_type === 'home'
+                                ? <Home size={13} className="text-blue-500 shrink-0" />
+                                : <Building2 size={13} className="text-charcoal-400 shrink-0" />
+                              }
+                              <span className="text-xs">
+                                {order.delivery_type === 'home' ? 'Home' : 'Desk'}
+                              </span>
+                            </div>
                           </td>
                           <td className="px-6 py-3 text-charcoal-500 dark:text-charcoal-400 hidden lg:table-cell">
                             {order.order_items?.length || 0} item{order.order_items?.length !== 1 ? 's' : ''}

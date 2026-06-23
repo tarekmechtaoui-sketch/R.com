@@ -72,7 +72,29 @@ export default function CheckoutPage() {
       })
       clearCart()
       toast.success('Order placed successfully!')
-      navigate(`/order-confirmation/${order.id}`)
+      navigate(`/order-confirmation/${order.id}`, {
+        state: {
+          order: {
+            id: order.id,
+            customer_name: data.fullName,
+            phone: data.phone,
+            wilaya: data.wilaya,
+            commune: data.commune,
+            notes: data.notes || null,
+            total_price: grandTotal,
+            delivery_type: deliveryType,
+            delivery_fee: deliveryFee,
+            status: 'new',
+            created_at: new Date().toISOString(),
+            order_items: items.map((item) => ({
+              product_name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+              products: { name: item.name, images: item.images || [] },
+            })),
+          },
+        },
+      })
     } catch (err) {
       toast.error('Failed to place order: ' + err.message)
     } finally {

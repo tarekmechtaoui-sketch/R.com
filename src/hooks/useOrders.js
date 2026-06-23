@@ -3,10 +3,14 @@ import { supabase } from '../lib/supabase'
 
 // Place a new order (public)
 export async function placeOrder({ customerInfo, items, total, deliveryType, deliveryFee }) {
+  // Generate ID client-side to avoid needing SELECT permission after insert
+  const orderId = crypto.randomUUID()
+
   // Insert order
-  const { data: order, error: orderError } = await supabase
+  const { error: orderError } = await supabase
     .from('orders')
     .insert({
+      id: orderId,
       customer_name: customerInfo.fullName,
       phone: customerInfo.phone,
       wilaya: customerInfo.wilaya,
@@ -17,14 +21,12 @@ export async function placeOrder({ customerInfo, items, total, deliveryType, del
       status: 'new',
       notes: customerInfo.notes || null,
     })
-    .select()
-    .single()
 
   if (orderError) throw orderError
 
   // Insert order items
   const orderItems = items.map((item) => ({
-    order_id: order.id,
+    order_id: orderId,
     product_id: item.id,
     product_name: item.name,
     quantity: item.quantity,
@@ -47,7 +49,7 @@ export async function placeOrder({ customerInfo, items, total, deliveryType, del
     console.warn('Stock decrement skipped:', stockErr?.message)
   }
 
-  return order
+  return { id: orderId }
 }
 
 // Get a single order with items (public, for confirmation page)
@@ -62,7 +64,7 @@ export async function getOrderById(id) {
 }
 
 // Admin hooks
-export function useAdminOrders({ status } = {}) {
+export function useAdminOrders({ status, dateFilter } = {}) {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -78,13 +80,28 @@ export function useAdminOrders({ status } = {}) {
       query = query.eq('status', status)
     }
 
+    if (dateFilter && dateFilter !== 'all') {
+      const now = new Date()
+      let from
+      if (dateFilter === 'today') {
+        from = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
+      } else if (dateFilter === 'week') {
+        const d = new Date(now); d.setDate(d.getDate() - 7)
+        from = d.toISOString()
+      } else if (dateFilter === 'month') {
+        const d = new Date(now); d.setDate(d.getDate() - 30)
+        from = d.toISOString()
+      }
+      if (from) query = query.gte('created_at', from)
+    }
+
     const { data, error: err } = await query
     if (err) setError(err.message)
     else setOrders(data || [])
     setLoading(false)
   }
 
-  useEffect(() => { fetchOrders() }, [status])
+  useEffect(() => { fetchOrders() }, [status, dateFilter])
 
   const updateOrderStatus = async (id, newStatus) => {
     const { error } = await supabase
