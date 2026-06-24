@@ -11,7 +11,7 @@ const navItems = [
   { label: 'Dashboard', to: '/admin', icon: LayoutDashboard, exact: true },
   { label: 'Products', to: '/admin/products', icon: Package },
   { label: 'Orders', to: '/admin/orders', icon: ShoppingBag },
-  { label: 'Users', to: '/admin/users', icon: Users, superAdminOnly: true },
+  { label: 'Users', to: '/admin/users', icon: Users },
   { label: 'Settings', to: '/admin/settings', icon: Settings, superAdminOnly: true },
 ]
 

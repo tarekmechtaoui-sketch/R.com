@@ -5,7 +5,8 @@ import { ChevronRight, ShoppingBag, Building2, Home } from 'lucide-react'
 import { useCart } from '../../contexts/CartContext'
 import { placeOrder } from '../../hooks/useOrders'
 import { formatPrice } from '../../utils/helpers'
-import { WILAYAS } from '../../utils/constants'
+import WILAYAS_DATA from '../../utils/wilayas.json'
+import COMMUNES_DATA from '../../utils/communes.json'
 import Button from '../../components/ui/Button'
 import toast from 'react-hot-toast'
 
@@ -31,6 +32,11 @@ export default function CheckoutPage() {
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [deliveryType, setDeliveryType] = useState('desk')
+  const [selectedWilayaId, setSelectedWilayaId] = useState('')
+
+  const availableCommunes = COMMUNES_DATA.filter(
+    (c) => c.wilaya_id === selectedWilayaId
+  )
 
   const selectedDelivery = DELIVERY_OPTIONS.find((o) => o.value === deliveryType)
   const deliveryFee = selectedDelivery.fee
@@ -39,6 +45,7 @@ export default function CheckoutPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm()
 
@@ -210,11 +217,21 @@ export default function CheckoutPage() {
                   <select
                     className="input-field"
                     {...register('wilaya', { required: 'Wilaya is required' })}
+                    onChange={(e) => {
+                      const opt = e.target.options[e.target.selectedIndex]
+                      setValue('wilaya', opt.value)
+                      setSelectedWilayaId(opt.dataset.id || '')
+                      setValue('commune', '')
+                    }}
                   >
                     <option value="">Select your wilaya</option>
-                    {WILAYAS.map((w) => (
-                      <option key={w.code} value={`${w.code} - ${w.name}`}>
-                        {w.code} - {w.name}
+                    {WILAYAS_DATA.map((w) => (
+                      <option
+                        key={w.id}
+                        value={`${w.code.padStart(2, '0')} - ${w.name}`}
+                        data-id={w.id}
+                      >
+                        {w.code.padStart(2, '0')} - {w.name}
                       </option>
                     ))}
                   </select>
@@ -226,11 +243,20 @@ export default function CheckoutPage() {
                 {/* Commune */}
                 <div>
                   <label className="label">Commune *</label>
-                  <input
+                  <select
                     className="input-field"
-                    placeholder="Your commune / city"
+                    disabled={!selectedWilayaId}
                     {...register('commune', { required: 'Commune is required' })}
-                  />
+                  >
+                    <option value="">
+                      {selectedWilayaId ? 'Select your commune' : 'Select a wilaya first'}
+                    </option>
+                    {availableCommunes.map((c) => (
+                      <option key={c.id} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                   {errors.commune && (
                     <p className="text-xs text-red-500 mt-1">{errors.commune.message}</p>
                   )}

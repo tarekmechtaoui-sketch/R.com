@@ -75,7 +75,7 @@ export default function App() {
               <Route path="/admin" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
               <Route path="/admin/products" element={<ProtectedRoute><AdminProductsPage /></ProtectedRoute>} />
               <Route path="/admin/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
-              <Route path="/admin/users" element={<ProtectedRoute superAdminOnly><UsersPage /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
               <Route path="/admin/settings" element={<ProtectedRoute superAdminOnly><SettingsPage /></ProtectedRoute>} />
 
               {/* Fallback */}
