@@ -14,9 +14,9 @@ export default function ProductsPage() {
   const [searchInput, setSearchInput] = useState(searchParams.get('search') || '')
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
+  const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || 'all')
   const { t } = useLanguage()
-
-  const { products, loading, error } = useProducts({ categorySlug: selectedCategory, search })
+  const { products, loading, error } = useProducts({ categorySlug: selectedCategory, brandSlug: selectedBrand, search })
   const { categories } = useCategories()
 
   // Stable debounced search — created once, never recreated on re-render
@@ -38,10 +38,17 @@ export default function ProductsPage() {
     setSearchParams(params)
   }
 
+  // Support brand filter via URL param (used when clicking Brand cards)
+  useEffect(() => {
+    const b = searchParams.get('brand') || 'all'
+    setSelectedBrand(b)
+  }, [searchParams])
+
   const clearFilters = () => {
     setSearchInput('')
     setSearch('')
     setSelectedCategory('all')
+    setSelectedBrand('all')
     setSearchParams({})
   }
 
@@ -49,7 +56,7 @@ export default function ProductsPage() {
     window.scrollTo(0, 0)
   }, [])
 
-  const hasFilters = search || selectedCategory !== 'all'
+  const hasFilters = search || selectedCategory !== 'all' || selectedBrand !== 'all'
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 animate-fade-in">

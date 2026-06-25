@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
-export function useProducts({ categorySlug, search, featured, limit } = {}) {
+export function useProducts({ categorySlug, brandSlug, search, featured, limit } = {}) {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -12,7 +12,7 @@ export function useProducts({ categorySlug, search, featured, limit } = {}) {
     try {
       let query = supabase
         .from('products')
-        .select('*, categories(id, name, slug)')
+        .select('*, categories(id, name, slug), brands(id, name)')
         .eq('status', 'active')
         .order('created_at', { ascending: false })
 
@@ -26,6 +26,15 @@ export function useProducts({ categorySlug, search, featured, limit } = {}) {
           .eq('slug', categorySlug)
           .single()
         if (cat) query = query.eq('category_id', cat.id)
+      }
+
+      if (brandSlug && brandSlug !== 'all') {
+        const { data: brand } = await supabase
+          .from('brands')
+          .select('id')
+          .eq('slug', brandSlug)
+          .single()
+        if (brand) query = query.eq('brand_id', brand.id)
       }
 
       const { data, error: err } = await query
@@ -54,7 +63,7 @@ export function useProduct(id) {
       setLoading(true)
       const { data, error: err } = await supabase
         .from('products')
-        .select('*, categories(id, name, slug)')
+        .select('*, categories(id, name, slug), brands(id, name)')
         .eq('id', id)
         .single()
       if (err) setError(err.message)
@@ -77,7 +86,7 @@ export function useAdminProducts() {
     setLoading(true)
     const { data, error: err } = await supabase
       .from('products')
-      .select('*, categories(id, name, slug)')
+      .select('*, categories(id, name, slug), brands(id, name)')
       .order('created_at', { ascending: false })
     if (err) setError(err.message)
     else setProducts(data || [])
@@ -90,7 +99,7 @@ export function useAdminProducts() {
     const { data, error } = await supabase
       .from('products')
       .insert(productData)
-      .select()
+      .select('*, categories(id, name, slug), brands(id, name)')
       .single()
     if (error) throw error
     await fetchProducts()
@@ -102,7 +111,7 @@ export function useAdminProducts() {
       .from('products')
       .update(productData)
       .eq('id', id)
-      .select()
+      .select('*, categories(id, name, slug), brands(id, name)')
       .single()
     if (error) throw error
     await fetchProducts()

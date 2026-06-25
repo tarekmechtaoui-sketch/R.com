@@ -132,6 +132,7 @@ export default function AdminProductsPage() {
                     <tr className="text-left text-xs text-charcoal-400 uppercase tracking-wider border-b border-charcoal-100 dark:border-charcoal-700">
                       <th className="px-6 py-3 font-semibold">Product</th>
                       <th className="px-6 py-3 font-semibold">Category</th>
+                      <th className="px-6 py-3 font-semibold">Brand</th>
                       <th className="px-6 py-3 font-semibold">Price</th>
                       <th className="px-6 py-3 font-semibold">Stock</th>
                       <th className="px-6 py-3 font-semibold">Status</th>
@@ -167,6 +168,9 @@ export default function AdminProductsPage() {
                           </td>
                           <td className="px-6 py-3 text-charcoal-500 dark:text-charcoal-400">
                             {p.categories?.name || '—'}
+                          </td>
+                          <td className="px-6 py-3 text-charcoal-500 dark:text-charcoal-400">
+                            {p.brands?.name || '—'}
                           </td>
                           <td className="px-6 py-3 font-semibold text-charcoal dark:text-charcoal-200">
                             {formatPrice(p.price)}

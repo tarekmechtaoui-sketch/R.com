@@ -4,6 +4,7 @@ import { X, Upload, Trash2 } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import Button from '../ui/Button'
 import toast from 'react-hot-toast'
+import { useBrands } from '../../hooks/useBrands'
 
 export default function ProductForm({ product, categories, onSave, onCancel }) {
   const isEditing = Boolean(product?.id)
@@ -16,6 +17,7 @@ export default function ProductForm({ product, categories, onSave, onCancel }) {
       description: product?.description || '',
       price: product?.price || '',
       category_id: product?.category_id || '',
+      brand_id: product?.brand_id || '',
       stock: product?.stock || 0,
       status: product?.status || 'active',
       featured: product?.featured || false,
@@ -29,12 +31,15 @@ export default function ProductForm({ product, categories, onSave, onCancel }) {
       description: product?.description || '',
       price: product?.price || '',
       category_id: product?.category_id || '',
+      brand_id: product?.brand_id || '',
       stock: product?.stock || 0,
       status: product?.status || 'active',
       featured: product?.featured || false,
     })
     setImages(product?.images || [])
   }, [product?.id])
+
+  const { brands } = useBrands()
 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0]
@@ -136,6 +141,17 @@ export default function ProductForm({ product, categories, onSave, onCancel }) {
           <option value="">Select category</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Brand */}
+      <div>
+        <label className="label">Brand</label>
+        <select className="input-field" {...register('brand_id')}>
+          <option value="">Select brand</option>
+          {brands.map((b) => (
+            <option key={b.id} value={b.id}>{b.name}</option>
           ))}
         </select>
       </div>
