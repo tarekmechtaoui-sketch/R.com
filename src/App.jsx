@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { LanguageProvider } from './contexts/LanguageContext'
 
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
@@ -21,25 +22,28 @@ import OrderConfirmationPage from './pages/client/OrderConfirmationPage'
 import LoginPage from './pages/admin/LoginPage'
 import DashboardPage from './pages/admin/DashboardPage'
 import AdminProductsPage from './pages/admin/ProductsPage'
+import CategoriesPage from './pages/admin/CategoriesPage'
+import BrandsPage from './pages/admin/BrandsPage'
 import OrdersPage from './pages/admin/OrdersPage'
 import UsersPage from './pages/admin/UsersPage'
 import SettingsPage from './pages/admin/SettingsPage'
 
 function ClientLayout({ children }) {
   return (
-    <div className="min-h-screen bg-cream dark:bg-charcoal-900 flex flex-col">
+    <LanguageProvider>
+      <div className="min-h-screen bg-cream dark:bg-charcoal-900 flex flex-col">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
-    </div>
-  )
+    </div>    </LanguageProvider>  )
 }
 
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <CartProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
           <Router>
             <Toaster
               position="top-right"
@@ -74,6 +78,8 @@ export default function App() {
               <Route path="/admin/login" element={<LoginPage />} />
               <Route path="/admin" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
               <Route path="/admin/products" element={<ProtectedRoute><AdminProductsPage /></ProtectedRoute>} />
+              <Route path="/admin/categories" element={<ProtectedRoute><CategoriesPage /></ProtectedRoute>} />
+              <Route path="/admin/brands" element={<ProtectedRoute><BrandsPage /></ProtectedRoute>} />
               <Route path="/admin/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
               <Route path="/admin/settings" element={<ProtectedRoute superAdminOnly><SettingsPage /></ProtectedRoute>} />
@@ -84,6 +90,7 @@ export default function App() {
           </Router>
         </CartProvider>
       </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   )
 }

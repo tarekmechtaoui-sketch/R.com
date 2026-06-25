@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { useForm } from 'react-hook-form'
 import { Globe, Store, Info } from 'lucide-react'
 import Sidebar from '../../components/admin/Sidebar'
@@ -9,6 +10,17 @@ import { supabase } from '../../lib/supabase'
 import toast from 'react-hot-toast'
 
 export default function SettingsPage() {
+  const { lang, setLanguage, t } = useLanguage()
+  const [savingLang, setSavingLang] = useState(false)
+  const [langSaved, setLangSaved] = useState(false)
+
+  const handleLanguageChange = async (code) => {
+    setSavingLang(true)
+    await setLanguage(code)
+    setSavingLang(false)
+    setLangSaved(true)
+    setTimeout(() => setLangSaved(false), 2000)
+  }
   const { profile, refetchProfile } = useAuth()
   const [saving, setSaving] = useState(false)
   const [changingPassword, setChangingPassword] = useState(false)
@@ -62,6 +74,25 @@ export default function SettingsPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader title="Settings" subtitle="Manage your account and store settings" />
         <main className="p-6 max-w-2xl space-y-6">
+
+          {/* ── Website Language ── */}
+          <div className="bg-white dark:bg-charcoal-800 rounded-2xl p-6 shadow-soft">
+            <div className="flex items-center gap-2 mb-1">
+              <Globe size={18} className="text-charcoal-400" />
+              <h2 className="font-bold text-lg text-charcoal dark:text-white">{t('settings.language')}</h2>
+            </div>
+            <p className="text-sm text-charcoal-400 mb-5">{t('settings.language_desc')}</p>
+            <div className="flex flex-wrap gap-3">
+              {[{code:'en',label:'English',flag:'🇬🇧'},{code:'fr',label:'Français',flag:'🇫🇷'},{code:'ar',label:'العربية',flag:'🇩🇿'}].map((l)=>(
+                <button key={l.code} onClick={()=>handleLanguageChange(l.code)} disabled={savingLang}
+                  className={`flex items-center gap-2 px-5 py-3 rounded-2xl border-2 font-semibold text-sm transition-all ${lang===l.code?'border-charcoal bg-charcoal text-white dark:border-white dark:bg-white dark:text-charcoal':'border-charcoal-200 dark:border-charcoal-600 text-charcoal-600 dark:text-charcoal-300 hover:border-charcoal-400'}`}>
+                  <span className="text-lg">{l.flag}</span> {l.label}
+                </button>
+              ))}
+            </div>
+            {langSaved && <p className="text-xs text-green-500 mt-3 font-medium">✓ {t('settings.saved')}</p>}
+          </div>
+
           {/* Profile Settings */}
           <div className="bg-white dark:bg-charcoal-800 rounded-2xl shadow-soft p-6">
             <h2 className="font-bold text-charcoal dark:text-white mb-5 flex items-center gap-2">

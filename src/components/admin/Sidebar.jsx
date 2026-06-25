@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Package, ShoppingBag, Users, Settings, LogOut,
-  Store, Menu, X
+  Layers, Store, Tag, Menu, X
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import toast from 'react-hot-toast'
@@ -10,6 +10,8 @@ import toast from 'react-hot-toast'
 const navItems = [
   { label: 'Dashboard', to: '/admin', icon: LayoutDashboard, exact: true },
   { label: 'Products', to: '/admin/products', icon: Package },
+  { label: 'Categories', to: '/admin/categories', icon: Layers },
+  { label: 'Brands', to: '/admin/brands', icon: Tag },
   { label: 'Orders', to: '/admin/orders', icon: ShoppingBag },
   { label: 'Users', to: '/admin/users', icon: Users },
   { label: 'Settings', to: '/admin/settings', icon: Settings, superAdminOnly: true },

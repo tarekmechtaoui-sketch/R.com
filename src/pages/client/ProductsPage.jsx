@@ -7,12 +7,14 @@ import EmptyState from '../../components/ui/EmptyState'
 import { useProducts } from '../../hooks/useProducts'
 import { useCategories } from '../../hooks/useCategories'
 import { debounce } from '../../utils/helpers'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchInput, setSearchInput] = useState(searchParams.get('search') || '')
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
+  const { t } = useLanguage()
 
   const { products, loading, error } = useProducts({ categorySlug: selectedCategory, search })
   const { categories } = useCategories()
@@ -54,10 +56,10 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-black text-charcoal dark:text-white mb-2">
-          All Products
+          {t('products.title')}
         </h1>
         <p className="text-charcoal-400">
-          {loading ? 'Loading...' : `${products.length} product${products.length !== 1 ? 's' : ''} found`}
+          {loading ? t('common.loading') : (products.length === 1 ? t('products.found_one') : t('products.found_many', { count: products.length }))}
         </p>
       </div>
 
@@ -80,7 +82,7 @@ export default function ProductsPage() {
               setSearchInput(e.target.value)
               debouncedSetSearch(e.target.value)
             }}
-            placeholder="Search products..."
+            placeholder={t('products.search_placeholder')}
             className="input-field pl-10"
           />
           {searchInput && (
@@ -100,7 +102,7 @@ export default function ProductsPage() {
             className="flex items-center gap-1.5 text-sm font-medium text-charcoal-500 hover:text-charcoal px-4 py-2 rounded-xl border border-charcoal-200 hover:border-charcoal transition-all"
           >
             <X size={14} />
-            Clear Filters
+            {t('products.clear_filters')}
           </button>
         )}
       </div>
@@ -115,7 +117,7 @@ export default function ProductsPage() {
               : 'bg-charcoal-100 text-charcoal-600 hover:bg-charcoal-200 dark:bg-charcoal-700 dark:text-charcoal-300 dark:hover:bg-charcoal-600'
           }`}
         >
-          All
+          {t('products.all_categories')}
         </button>
         {categories.map((cat) => (
           <button

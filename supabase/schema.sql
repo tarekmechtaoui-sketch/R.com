@@ -20,6 +20,16 @@ CREATE TABLE IF NOT EXISTS categories (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Brands
+CREATE TABLE IF NOT EXISTS brands (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  description TEXT,
+  image TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Products
 CREATE TABLE IF NOT EXISTS products (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -27,6 +37,7 @@ CREATE TABLE IF NOT EXISTS products (
   description TEXT,
   price DECIMAL(10,2) NOT NULL DEFAULT 0,
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  brand_id UUID REFERENCES brands(id) ON DELETE SET NULL,
   stock INTEGER NOT NULL DEFAULT 0,
   images TEXT[] DEFAULT '{}',
   status VARCHAR(50) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'out_of_stock')),
@@ -78,6 +89,7 @@ CREATE TABLE IF NOT EXISTS profiles (
 -- =============================================
 
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
+CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand_id);
 CREATE INDEX IF NOT EXISTS idx_products_status ON products(status);
 CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
@@ -144,6 +156,17 @@ CREATE POLICY "Public can read categories"
 -- Only authenticated users (admins) can modify
 CREATE POLICY "Admins can manage categories"
   ON categories FOR ALL
+  TO authenticated USING (true) WITH CHECK (true);
+
+-- ── Brands RLS ──
+-- Anyone can read brands
+CREATE POLICY "Public can read brands"
+  ON brands FOR SELECT
+  TO public USING (true);
+
+-- Only authenticated users (admins) can modify
+CREATE POLICY "Admins can manage brands"
+  ON brands FOR ALL
   TO authenticated USING (true) WITH CHECK (true);
 
 -- ── Products RLS ──
@@ -246,12 +269,70 @@ CREATE POLICY "Super admins can manage profiles"
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 
 -- Anon (guest customers): read store data, place orders
-GRANT SELECT ON products, categories TO anon;
+GRANT SELECT ON products, categories, brands TO anon;
 GRANT INSERT, SELECT ON orders TO anon;
 GRANT INSERT, SELECT ON order_items TO anon;
 
 -- Authenticated (admins): full access
 GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
+
+-- =============================================
+-- SITE SETTINGS TABLE
+-- =============================================
+-- Stores global site configuration (e.g. active language).
+
+CREATE TABLE IF NOT EXISTS site_settings (
+  key VARCHAR(100) PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+
+-- Anyone (including visitors) can read settings
+CREATE POLICY "Anyone can read settings"
+  ON site_settings FOR SELECT
+  TO public USING (true);
+
+-- Only admins can write settings
+CREATE POLICY "Admins can update settings"
+  ON site_settings FOR ALL
+  TO authenticated USING (true) WITH CHECK (true);
+
+GRANT SELECT ON site_settings TO anon;
+GRANT ALL ON site_settings TO authenticated;
+
+-- Default language: English
+INSERT INTO site_settings (key, value)
+VALUES ('language', 'en')
+ON CONFLICT (key) DO NOTHING;
+
+-- =============================================
+-- SITE SETTINGS TABLE
+-- =============================================
+CREATE TABLE IF NOT EXISTS site_settings (
+  key VARCHAR(100) PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Default language: English
+INSERT INTO site_settings (key, value)
+  VALUES ('language', 'en')
+  ON CONFLICT (key) DO NOTHING;
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can read settings (needed for language on page load)
+CREATE POLICY "Public can read site settings"
+  ON site_settings FOR SELECT TO public USING (true);
+
+-- Only admins can update settings
+CREATE POLICY "Admins can update site settings"
+  ON site_settings FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+GRANT SELECT ON site_settings TO anon;
+GRANT ALL ON site_settings TO authenticated;
 
 -- =============================================
 -- STOCK MANAGEMENT FUNCTION

@@ -5,10 +5,12 @@ import { getOrderById } from '../../hooks/useOrders'
 import { formatPrice, formatDate } from '../../utils/helpers'
 import { PageLoader } from '../../components/ui/LoadingSpinner'
 import { ORDER_STATUSES } from '../../utils/constants'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 export default function OrderConfirmationPage() {
   const { id } = useParams()
   const location = useLocation()
+  const { t } = useLanguage()
   const [order, setOrder] = useState(location.state?.order || null)
   const [loading, setLoading] = useState(!location.state?.order)
   const [error, setError] = useState(null)
@@ -29,7 +31,7 @@ export default function OrderConfirmationPage() {
   if (error || !order) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold text-charcoal dark:text-white mb-4">Order not found</h2>
+        <h2 className="text-2xl font-bold text-charcoal dark:text-white mb-4">{t('order.not_found')}</h2>
         <Link to="/" className="btn-primary inline-flex">Go Home</Link>
       </div>
     )
@@ -45,10 +47,10 @@ export default function OrderConfirmationPage() {
           <CheckCircle size={40} className="text-green-500" />
         </div>
         <h1 className="text-3xl font-black text-charcoal dark:text-white mb-2">
-          Order Confirmed!
+          {t('order.confirmed')}
         </h1>
         <p className="text-charcoal-500 dark:text-charcoal-300">
-          Thank you for your order. We'll contact you soon to confirm delivery.
+          {t('order.thank_you')}
         </p>
       </div>
 
@@ -57,13 +59,13 @@ export default function OrderConfirmationPage() {
         {/* Order header */}
         <div className="bg-charcoal-50 dark:bg-charcoal-700 px-6 py-4 flex items-center justify-between">
           <div>
-            <p className="text-xs text-charcoal-400 font-medium">Order ID</p>
+            <p className="text-xs text-charcoal-400 font-medium">{t('order.id')}</p>
             <p className="font-mono text-sm font-bold text-charcoal dark:text-white">
               #{order.id.slice(0, 8).toUpperCase()}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-charcoal-400 font-medium">Date</p>
+            <p className="text-xs text-charcoal-400 font-medium">{t('order.date')}</p>
             <p className="text-sm font-semibold text-charcoal dark:text-white">
               {formatDate(order.created_at)}
             </p>
@@ -79,7 +81,7 @@ export default function OrderConfirmationPage() {
           {/* Customer Info */}
           <div>
             <h3 className="font-bold text-sm text-charcoal dark:text-white mb-3 uppercase tracking-widest">
-              Delivery Info
+              {t('order.customer')}
             </h3>
             <div className="space-y-2">
               {[
@@ -88,7 +90,7 @@ export default function OrderConfirmationPage() {
                 { icon: MapPin, label: `${order.wilaya} — ${order.commune}` },
                 {
                   icon: order.delivery_type === 'home' ? Home : Building2,
-                  label: order.delivery_type === 'home' ? 'Home Delivery (+700 DA)' : 'Delivery to Desk / Agency (+500 DA)',
+                  label: order.delivery_type === 'home' ? t('order.home_delivery') : t('order.desk_delivery'),
                 },
               ].map(({ icon: Icon, label }) => (
                 <div key={label} className="flex items-center gap-3">
@@ -102,7 +104,7 @@ export default function OrderConfirmationPage() {
           {/* Items */}
           <div className="border-t border-charcoal-100 dark:border-charcoal-700 pt-5">
             <h3 className="font-bold text-sm text-charcoal dark:text-white mb-3 uppercase tracking-widest">
-              Items Ordered
+              {t('order.items')}
             </h3>
             <div className="space-y-3">
               {order.order_items?.map((item) => (
@@ -131,13 +133,13 @@ export default function OrderConfirmationPage() {
             {order.delivery_fee != null && (
               <>
                 <div className="flex justify-between text-sm">
-                  <span className="text-charcoal-400">Subtotal</span>
+                  <span className="text-charcoal-400">{t('order.subtotal')}</span>
                   <span className="font-semibold text-charcoal dark:text-charcoal-200">
                     {formatPrice(order.total_price - order.delivery_fee)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-charcoal-400">Delivery fee</span>
+                  <span className="text-charcoal-400">{t('order.delivery_fee')}</span>
                   <span className="font-semibold text-charcoal dark:text-charcoal-200">
                     +{formatPrice(order.delivery_fee)}
                   </span>
@@ -145,7 +147,7 @@ export default function OrderConfirmationPage() {
               </>
             )}
             <div className="flex justify-between pt-2 border-t border-charcoal-100 dark:border-charcoal-700">
-              <span className="font-bold text-charcoal dark:text-white">Total</span>
+              <span className="font-bold text-charcoal dark:text-white">{t('order.total')}</span>
               <span className="font-black text-xl text-charcoal dark:text-white">
                 {formatPrice(order.total_price)}
               </span>
@@ -157,7 +159,7 @@ export default function OrderConfirmationPage() {
       {/* Actions */}
       <div className="flex gap-3 justify-center">
         <Link to="/" className="btn-primary inline-flex">
-          Continue Shopping
+          {t('order.continue')}
         </Link>
         <Link to="/products" className="btn-secondary inline-flex">
           Browse More

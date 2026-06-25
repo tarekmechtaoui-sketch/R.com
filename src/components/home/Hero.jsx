@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 export default function Hero() {
+    const { t } = useLanguage()
     return (
         <section className="max-w-7xl mx-auto px-4 md:px-8 pt-10 pb-16">
             <div className="relative bg-cream dark:bg-charcoal-900 rounded-3xl overflow-hidden min-h-[420px] flex items-center">
@@ -11,18 +12,18 @@ export default function Hero() {
                     <div className="inline-flex items-center gap-2 bg-white dark:bg-charcoal-800 border border-charcoal-100 dark:border-charcoal-700 rounded-full px-4 py-1.5 mb-6">
                         <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                         <span className="text-xs font-semibold text-charcoal-500 dark:text-charcoal-300">
-                            50+ Premium Products
+                            {t('hero.tag')}
                         </span>
                     </div>
 
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-charcoal dark:text-white leading-none mb-6 text-balance">
-                        Smart Living
+                        {t('hero.title1')}
                         <br />
-                        Starts Here
+                        {t('hero.title2')}
                     </h1>
 
                     <p className="text-charcoal-500 dark:text-charcoal-300 text-base max-w-md leading-relaxed mb-8">
-                        Discover premium mobile accessories designed for your lifestyle. From cases to smart gadgets — we have everything you need.
+                        {t('hero.subtitle')}
                     </p>
 
                     <div className="flex flex-wrap items-center gap-3 mb-10">
@@ -30,13 +31,13 @@ export default function Hero() {
                             to="/products"
                             className="bg-charcoal dark:bg-white text-white dark:text-charcoal px-7 py-3.5 rounded-full font-semibold text-sm hover:bg-charcoal-700 dark:hover:bg-charcoal-100 active:scale-95 transition-all duration-200"
                         >
-                            Explore Products
+                            {t('hero.cta_shop')}
                         </Link>
                         <Link
                             to="/products"
                             className="border-2 border-charcoal dark:border-charcoal-400 text-charcoal dark:text-charcoal-200 px-7 py-3.5 rounded-full font-semibold text-sm hover:bg-charcoal hover:text-white dark:hover:bg-charcoal-700 active:scale-95 transition-all duration-200"
                         >
-                            About Us
+                            {t('hero.cta_about')}
                         </Link>
                     </div>
 
@@ -44,7 +45,7 @@ export default function Hero() {
                     <div className="flex items-center gap-6 flex-wrap">
                         <div>
                             <p className="text-2xl font-black text-charcoal dark:text-white">500+</p>
-                            <p className="text-xs text-charcoal-400 font-medium">Products</p>
+                            <p className="text-xs text-charcoal-400 font-medium">{t('hero.stat_products')}</p>
                         </div>
                         <div className="w-px h-10 bg-charcoal-200 dark:bg-charcoal-700" />
                         <div className="flex items-center gap-3">
@@ -60,13 +61,13 @@ export default function Hero() {
                             </div>
                             <div>
                                 <p className="text-2xl font-black text-charcoal dark:text-white">355+</p>
-                                <p className="text-xs text-charcoal-400 font-medium">Happy Clients</p>
+                                <p className="text-xs text-charcoal-400 font-medium">{t('hero.stat_clients')}</p>
                             </div>
                         </div>
                         <div className="w-px h-10 bg-charcoal-200 dark:bg-charcoal-700 hidden sm:block" />
                         <div className="hidden sm:block">
                             <p className="text-2xl font-black text-charcoal dark:text-white">4.8</p>
-                            <p className="text-xs text-charcoal-400 font-medium">Market Rating</p>
+                            <p className="text-xs text-charcoal-400 font-medium">{t('hero.stat_rating')}</p>
                         </div>
                     </div>
                 </div>

@@ -3,17 +3,19 @@ import { Link, NavLink } from 'react-router-dom'
 import { ShoppingCart, Menu, X, Sun, Moon } from 'lucide-react'
 import { useCart } from '../../contexts/CartContext'
 import { useTheme } from '../../contexts/ThemeContext'
-
-const navLinks = [
-  { label: 'Home', to: '/' },
-  { label: 'Products', to: '/products' },
-]
+import { useLanguage } from '../../contexts/LanguageContext'
 
 export default function Navbar() {
   const { cartCount } = useCart()
   const { toggleTheme, isDark } = useTheme()
+  const { t } = useLanguage()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+
+  const navLinks = [
+    { label: t('nav.home'), to: '/' },
+    { label: t('nav.products'), to: '/products' },
+  ]
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)

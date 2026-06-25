@@ -5,34 +5,36 @@ import { ChevronRight, ShoppingBag, Building2, Home } from 'lucide-react'
 import { useCart } from '../../contexts/CartContext'
 import { placeOrder } from '../../hooks/useOrders'
 import { formatPrice } from '../../utils/helpers'
+import { useLanguage } from '../../contexts/LanguageContext'
 import WILAYAS_DATA from '../../utils/wilayas.json'
 import COMMUNES_DATA from '../../utils/communes.json'
 import Button from '../../components/ui/Button'
 import toast from 'react-hot-toast'
 
-const DELIVERY_OPTIONS = [
-  {
-    value: 'desk',
-    label: 'Delivery to Desk / Agency',
-    description: 'Pick up from the nearest delivery agency',
-    fee: 500,
-    icon: Building2,
-  },
-  {
-    value: 'home',
-    label: 'Home Delivery',
-    description: 'Delivered directly to your address',
-    fee: 700,
-    icon: Home,
-  },
-]
-
 export default function CheckoutPage() {
   const { items, cartTotal, clearCart } = useCart()
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [submitting, setSubmitting] = useState(false)
   const [deliveryType, setDeliveryType] = useState('desk')
   const [selectedWilayaId, setSelectedWilayaId] = useState('')
+
+  const DELIVERY_OPTIONS = [
+    {
+      value: 'desk',
+      label: t('checkout.desk_label'),
+      description: t('checkout.desk_desc'),
+      fee: 500,
+      icon: Building2,
+    },
+    {
+      value: 'home',
+      label: t('checkout.home_label'),
+      description: t('checkout.home_desc'),
+      fee: 700,
+      icon: Home,
+    },
+  ]
 
   const availableCommunes = COMMUNES_DATA.filter(
     (c) => c.wilaya_id === selectedWilayaId
@@ -113,12 +115,12 @@ export default function CheckoutPage() {
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 animate-fade-in">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-charcoal-400 mb-8">
-        <Link to="/cart" className="hover:text-charcoal transition-colors">Cart</Link>
+        <Link to="/cart" className="hover:text-charcoal transition-colors">{t('checkout.cart')}</Link>
         <ChevronRight size={14} />
-        <span className="text-charcoal dark:text-white font-medium">Checkout</span>
+        <span className="text-charcoal dark:text-white font-medium">{t('checkout.title')}</span>
       </nav>
 
-      <h1 className="text-3xl font-black text-charcoal dark:text-white mb-8">Checkout</h1>
+      <h1 className="text-3xl font-black text-charcoal dark:text-white mb-8">{t('checkout.title')}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Form */}
@@ -128,7 +130,7 @@ export default function CheckoutPage() {
             {/* ── Delivery Type ── */}
             <div className="bg-white dark:bg-charcoal-800 rounded-2xl p-6 shadow-soft">
               <h2 className="font-bold text-lg text-charcoal dark:text-white mb-5">
-                Delivery Method
+                {t('checkout.delivery_method')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {DELIVERY_OPTIONS.map((option) => {
@@ -174,16 +176,16 @@ export default function CheckoutPage() {
             {/* ── Customer Info ── */}
             <div className="bg-white dark:bg-charcoal-800 rounded-2xl p-6 shadow-soft">
               <h2 className="font-bold text-lg text-charcoal dark:text-white mb-5">
-                Delivery Information
+                {t('checkout.delivery_info')}
               </h2>
 
               <div className="space-y-4">
                 {/* Full Name */}
                 <div>
-                  <label className="label">Full Name *</label>
+                  <label className="label">{t('checkout.full_name')}</label>
                   <input
                     className="input-field"
-                    placeholder="Your full name"
+                    placeholder={t('checkout.full_name_placeholder')}
                     {...register('fullName', { required: 'Full name is required' })}
                   />
                   {errors.fullName && (
@@ -193,10 +195,10 @@ export default function CheckoutPage() {
 
                 {/* Phone */}
                 <div>
-                  <label className="label">Phone Number *</label>
+                  <label className="label">{t('checkout.phone')}</label>
                   <input
                     className="input-field"
-                    placeholder="e.g. 0555 000 000"
+                    placeholder={t('checkout.phone_placeholder')}
                     type="tel"
                     {...register('phone', {
                       required: 'Phone number is required',
@@ -213,7 +215,7 @@ export default function CheckoutPage() {
 
                 {/* Wilaya */}
                 <div>
-                  <label className="label">Wilaya *</label>
+                  <label className="label">{t('checkout.wilaya')}</label>
                   <select
                     className="input-field"
                     {...register('wilaya', { required: 'Wilaya is required' })}
@@ -224,7 +226,7 @@ export default function CheckoutPage() {
                       setValue('commune', '')
                     }}
                   >
-                    <option value="">Select your wilaya</option>
+                    <option value="">{t('checkout.wilaya_placeholder')}</option>
                     {WILAYAS_DATA.map((w) => (
                       <option
                         key={w.id}
@@ -242,14 +244,14 @@ export default function CheckoutPage() {
 
                 {/* Commune */}
                 <div>
-                  <label className="label">Commune *</label>
+                  <label className="label">{t('checkout.commune')}</label>
                   <select
                     className="input-field"
                     disabled={!selectedWilayaId}
                     {...register('commune', { required: 'Commune is required' })}
                   >
                     <option value="">
-                      {selectedWilayaId ? 'Select your commune' : 'Select a wilaya first'}
+                      {selectedWilayaId ? t('checkout.commune_placeholder') : t('checkout.commune_first')}
                     </option>
                     {availableCommunes.map((c) => (
                       <option key={c.id} value={c.name}>
@@ -264,11 +266,11 @@ export default function CheckoutPage() {
 
                 {/* Notes */}
                 <div>
-                  <label className="label">Order Notes (optional)</label>
+                  <label className="label">{t('checkout.notes')}</label>
                   <textarea
                     className="input-field resize-none"
                     rows={3}
-                    placeholder="Any additional notes for your order..."
+                    placeholder={t('checkout.notes_placeholder')}
                     {...register('notes')}
                   />
                 </div>
@@ -276,11 +278,11 @@ export default function CheckoutPage() {
             </div>
 
             <Button type="submit" loading={submitting} className="w-full" size="lg">
-              {submitting ? 'Placing Order...' : `Place Order • ${formatPrice(grandTotal)}`}
+              {submitting ? t('checkout.placing') : `${t('checkout.place_order')} • ${formatPrice(grandTotal)}`}
             </Button>
 
             <p className="text-xs text-charcoal-400 text-center">
-              No account required. We'll contact you on the phone number provided.
+              {t('checkout.no_account')}
             </p>
           </form>
         </div>
@@ -288,7 +290,7 @@ export default function CheckoutPage() {
         {/* Order Summary */}
         <div>
           <div className="bg-white dark:bg-charcoal-800 rounded-2xl p-6 shadow-soft sticky top-24">
-            <h2 className="font-bold text-lg text-charcoal dark:text-white mb-5">Order Summary</h2>
+            <h2 className="font-bold text-lg text-charcoal dark:text-white mb-5">{t('checkout.order_summary')}</h2>
 
             <div className="space-y-3 mb-4">
               {items.map((item) => (
@@ -313,17 +315,17 @@ export default function CheckoutPage() {
 
             <div className="border-t border-charcoal-100 dark:border-charcoal-700 pt-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-charcoal-500 dark:text-charcoal-400">Subtotal</span>
+                <span className="text-charcoal-500 dark:text-charcoal-400">{t('checkout.subtotal')}</span>
                 <span className="font-semibold text-charcoal dark:text-charcoal-200">{formatPrice(cartTotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-charcoal-500 dark:text-charcoal-400">
-                  Delivery ({selectedDelivery.label.split('/')[0].trim()})
+                  {t('checkout.delivery_fee')}
                 </span>
                 <span className="font-semibold text-charcoal dark:text-charcoal-200">+{formatPrice(deliveryFee)}</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-charcoal-100 dark:border-charcoal-700">
-                <span className="font-bold text-charcoal dark:text-white">Total</span>
+                <span className="font-bold text-charcoal dark:text-white">{t('checkout.grand_total')}</span>
                 <span className="font-black text-lg text-charcoal dark:text-white">
                   {formatPrice(grandTotal)}
                 </span>

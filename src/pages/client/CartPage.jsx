@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react'
 import { useCart } from '../../contexts/CartContext'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { formatPrice } from '../../utils/helpers'
 import Button from '../../components/ui/Button'
 import EmptyState from '../../components/ui/EmptyState'
@@ -8,19 +9,20 @@ import EmptyState from '../../components/ui/EmptyState'
 export default function CartPage() {
   const { items, updateQuantity, removeFromCart, cartTotal } = useCart()
   const navigate = useNavigate()
+  const { t } = useLanguage()
 
   if (items.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-        <h1 className="text-3xl font-black text-charcoal dark:text-white mb-8">Your Cart</h1>
+        <h1 className="text-3xl font-black text-charcoal dark:text-white mb-8">{t('cart.title')}</h1>
         <EmptyState
           type="cart"
-          title="Your cart is empty"
-          description="Browse our products and add some items to your cart."
+          title={t('cart.empty_title')}
+          description={t('cart.empty_desc')}
           action={
             <Link to="/products" className="btn-primary inline-flex gap-2">
               <ShoppingBag size={16} />
-              Browse Products
+              {t('cart.browse')}
             </Link>
           }
         />
@@ -31,7 +33,7 @@ export default function CartPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 animate-fade-in">
       <h1 className="text-3xl font-black text-charcoal dark:text-white mb-8">
-        Your Cart ({items.length} {items.length === 1 ? 'item' : 'items'})
+        {items.length === 1 ? t('cart.title_count_one') : t('cart.title_count_many', { count: items.length })}
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -105,7 +107,7 @@ export default function CartPage() {
         {/* Summary */}
         <div className="lg:col-span-1">
           <div className="bg-white dark:bg-charcoal-800 rounded-2xl p-6 shadow-soft sticky top-24">
-            <h2 className="font-bold text-lg text-charcoal dark:text-white mb-5">Order Summary</h2>
+            <h2 className="font-bold text-lg text-charcoal dark:text-white mb-5">{t('cart.order_summary')}</h2>
 
             {/* Items */}
             <div className="space-y-3 mb-5">
@@ -123,19 +125,19 @@ export default function CartPage() {
 
             <div className="border-t border-charcoal-100 dark:border-charcoal-700 pt-4 mb-6">
               <div className="flex justify-between">
-                <span className="font-bold text-charcoal dark:text-white">Total</span>
+                <span className="font-bold text-charcoal dark:text-white">{t('cart.total')}</span>
                 <span className="font-black text-xl text-charcoal dark:text-white">
                   {formatPrice(cartTotal)}
                 </span>
               </div>
-              <p className="text-xs text-charcoal-400 mt-1">Delivery fee calculated at checkout</p>
+              <p className="text-xs text-charcoal-400 mt-1">{t('cart.delivery_note')}</p>
             </div>
 
             <Button
               onClick={() => navigate('/checkout')}
               className="w-full"
             >
-              Proceed to Checkout
+              {t('cart.checkout')}
               <ArrowRight size={16} />
             </Button>
 
@@ -143,7 +145,7 @@ export default function CartPage() {
               to="/products"
               className="mt-3 block text-center text-sm font-medium text-charcoal-400 hover:text-charcoal dark:hover:text-white transition-colors"
             >
-              Continue Shopping
+              {t('cart.continue')}
             </Link>
           </div>
         </div>

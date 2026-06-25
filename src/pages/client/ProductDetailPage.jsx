@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ShoppingCart, ArrowLeft, Minus, Plus, Check, ChevronRight } from 'lucide-react'
 import { useProduct } from '../../hooks/useProducts'
 import { useCart } from '../../contexts/CartContext'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { PageLoader } from '../../components/ui/LoadingSpinner'
 import { formatPrice } from '../../utils/helpers'
 import Button from '../../components/ui/Button'
@@ -12,6 +13,7 @@ export default function ProductDetailPage() {
   const navigate = useNavigate()
   const { product, loading, error } = useProduct(id)
   const { addToCart } = useCart()
+  const { t } = useLanguage()
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
@@ -26,9 +28,9 @@ export default function ProductDetailPage() {
   if (error || !product) {
     return (
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-20 text-center">
-        <h2 className="text-2xl font-bold text-charcoal dark:text-white mb-4">Product not found</h2>
+        <h2 className="text-2xl font-bold text-charcoal dark:text-white mb-4">{t('detail.not_found')}</h2>
         <Link to="/products" className="btn-primary inline-flex">
-          Back to Products
+          {t('detail.back')}
         </Link>
       </div>
     )
@@ -46,9 +48,9 @@ export default function ProductDetailPage() {
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 animate-fade-in">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-charcoal-400 mb-8">
-        <Link to="/" className="hover:text-charcoal transition-colors">Home</Link>
+        <Link to="/" className="hover:text-charcoal transition-colors">{t('detail.home')}</Link>
         <ChevronRight size={14} />
-        <Link to="/products" className="hover:text-charcoal transition-colors">Products</Link>
+        <Link to="/products" className="hover:text-charcoal transition-colors">{t('detail.products')}</Link>
         <ChevronRight size={14} />
         <span className="text-charcoal dark:text-white font-medium truncate">{product.name}</span>
       </nav>
@@ -92,7 +94,7 @@ export default function ProductDetailPage() {
         <div className="flex flex-col">
           {/* Category */}
           <p className="text-xs text-charcoal-400 uppercase tracking-widest font-medium mb-2">
-            {product.categories?.name || 'Accessory'}
+            {product.categories?.name || t('detail.accessory')}
           </p>
 
           {/* Name */}
@@ -116,14 +118,14 @@ export default function ProductDetailPage() {
           <div className="flex items-center gap-2 mb-6">
             <div className={`w-2 h-2 rounded-full ${inStock ? 'bg-green-500' : 'bg-red-500'}`} />
             <span className={`text-sm font-semibold ${inStock ? 'text-green-600' : 'text-red-500'}`}>
-              {inStock ? 'In Stock' : 'Out of Stock'}
+              {inStock ? t('common.in_stock') : t('common.out_of_stock')}
             </span>
           </div>
 
           {/* Quantity */}
           {inStock && (
             <div className="mb-6">
-              <label className="label">Quantity</label>
+              <label className="label">{t('detail.quantity')}</label>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -152,9 +154,9 @@ export default function ProductDetailPage() {
               className="flex-1 min-w-[180px]"
             >
               {added ? (
-                <><Check size={16} /> Added!</>
+                <><Check size={16} /> {t('common.added')}</>
               ) : (
-                <><ShoppingCart size={16} /> Add to Cart</>
+                <><ShoppingCart size={16} /> {t('common.add_to_cart')}</>
               )}
             </Button>
             <Button
@@ -166,7 +168,7 @@ export default function ProductDetailPage() {
               disabled={!inStock}
               className="flex-1 min-w-[140px]"
             >
-              Buy Now
+              {t('detail.buy_now')}
             </Button>
           </div>
 
@@ -176,7 +178,7 @@ export default function ProductDetailPage() {
             className="mt-6 flex items-center gap-2 text-sm font-medium text-charcoal-400 hover:text-charcoal dark:hover:text-white transition-colors w-fit"
           >
             <ArrowLeft size={15} />
-            Back to Products
+            {t('detail.back')}
           </Link>
         </div>
       </div>

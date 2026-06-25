@@ -1,21 +1,23 @@
 import { Link } from 'react-router-dom'
 import { Instagram, Facebook, Twitter, Mail, Phone, MapPin } from 'lucide-react'
-
-const categories = [
-  { label: 'Cases & Covers', to: '/products?category=cases' },
-  { label: 'Chargers & Cables', to: '/products?category=chargers' },
-  { label: 'Audio & Headphones', to: '/products?category=audio' },
-  { label: 'Power Banks', to: '/products?category=power' },
-  { label: 'Smart Accessories', to: '/products?category=smart' },
-]
-
-const quickLinks = [
-  { label: 'Home', to: '/' },
-  { label: 'Products', to: '/products' },
-  { label: 'Cart', to: '/cart' },
-]
+import { useLanguage } from '../../contexts/LanguageContext'
 
 export default function Footer() {
+  const { t } = useLanguage()
+
+  const categories = [
+    { label: 'Cases & Covers', to: '/products?category=cases' },
+    { label: 'Chargers & Cables', to: '/products?category=chargers' },
+    { label: 'Audio & Headphones', to: '/products?category=audio' },
+    { label: 'Power Banks', to: '/products?category=power' },
+    { label: 'Smart Accessories', to: '/products?category=smart' },
+  ]
+
+  const quickLinks = [
+    { label: t('nav.home'), to: '/' },
+    { label: t('nav.products'), to: '/products' },
+    { label: t('nav.cart'), to: '/cart' },
+  ]
   return (
     <footer className="bg-charcoal dark:bg-charcoal-900 text-white mt-20">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-16">
@@ -29,7 +31,7 @@ export default function Footer() {
               <span className="text-xl font-black tracking-tight">R.com</span>
             </div>
             <p className="text-charcoal-300 text-sm leading-relaxed mb-6">
-              Your premium destination for mobile accessories. Smart Living Starts Here.
+              {t('footer.tagline')}
             </p>
             <div className="flex items-center gap-3">
               {[Instagram, Facebook, Twitter].map((Icon, i) => (
@@ -47,7 +49,7 @@ export default function Footer() {
           {/* Categories */}
           <div>
             <h4 className="font-semibold text-sm uppercase tracking-widest text-charcoal-400 mb-5">
-              Categories
+              {t('footer.categories')}
             </h4>
             <ul className="space-y-3">
               {categories.map((cat) => (
@@ -66,7 +68,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h4 className="font-semibold text-sm uppercase tracking-widest text-charcoal-400 mb-5">
-              Quick Links
+              {t('footer.quick_links')}
             </h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
@@ -85,7 +87,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h4 className="font-semibold text-sm uppercase tracking-widest text-charcoal-400 mb-5">
-              Contact
+              {t('footer.contact')}
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
@@ -110,7 +112,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-charcoal-700 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-charcoal-400">
-            © {new Date().getFullYear()} R.com. All rights reserved.
+            © {new Date().getFullYear()} R.com. {t('footer.rights')}
           </p>
           <p className="text-xs text-charcoal-500">
             Premium Mobile Accessories Store

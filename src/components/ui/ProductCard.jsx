@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import { useCart } from '../../contexts/CartContext'
 import { formatPrice } from '../../utils/helpers'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart()
+  const { t } = useLanguage()
   const image = product.images?.[0]
 
   return (
@@ -34,7 +36,7 @@ export default function ProductCard({ product }) {
                   className="bg-charcoal text-white text-xs px-4 py-2 rounded-full font-semibold flex items-center gap-1.5 hover:bg-charcoal-700 transition-colors active:scale-95"
                 >
                   <ShoppingCart size={13} />
-                  Add to Cart
+                  {t('common.add_to_cart')}
                 </button>
               </div>
             </div>
@@ -42,12 +44,12 @@ export default function ProductCard({ product }) {
           {/* Status badge */}
           {product.stock === 0 && (
             <div className="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-semibold px-2 py-1 rounded-full">
-              Out of Stock
+              {t('common.out_of_stock')}
             </div>
           )}
           {product.featured && product.stock > 0 && (
             <div className="absolute top-3 right-3 bg-charcoal text-white text-[10px] font-semibold px-2 py-1 rounded-full">
-              Featured
+              {t('common.featured')}
             </div>
           )}
         </div>
@@ -56,7 +58,7 @@ export default function ProductCard({ product }) {
       {/* Info */}
       <div className="flex-1">
         <p className="text-xs text-charcoal-400 uppercase tracking-widest mb-1 font-medium">
-          {product.categories?.name || 'Accessory'}
+          {product.categories?.name || t('product_card.accessory')}
         </p>
         <Link to={`/products/${product.id}`}>
           <h3 className="font-bold text-charcoal dark:text-white text-base mb-1 hover:underline underline-offset-2 line-clamp-2">

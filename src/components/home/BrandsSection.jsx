@@ -1,24 +1,23 @@
-import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
-import CategoryCard from '../ui/CategoryCard'
+import BrandCard from '../ui/BrandCard'
 import { useLanguage } from '../../contexts/LanguageContext'
 
-export default function CategoriesSection({ categories = [], loading = false }) {
+export default function BrandsSection({ brands = [], loading = false }) {
   const { t } = useLanguage()
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-8 my-16">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl md:text-3xl font-black text-charcoal dark:text-white">
-          {t('categories.title')}
+          {t('brands.title')}
         </h2>
-        <Link
-          to="/products"
+        <a
+          href="/products"
           className="flex items-center gap-1.5 text-sm font-semibold text-charcoal-500 hover:text-charcoal dark:text-charcoal-300 dark:hover:text-white transition-colors"
         >
-          {t('categories.view_all')}
+          {t('brands.view_all')}
           <ArrowUpRight size={15} />
-        </Link>
+        </a>
       </div>
 
       {/* Grid */}
@@ -30,8 +29,8 @@ export default function CategoriesSection({ categories = [], loading = false }) 
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {categories.slice(0, 4).map((cat) => (
-            <CategoryCard key={cat.id} category={cat} />
+          {brands.slice(0, 4).map((brand) => (
+            <BrandCard key={brand.id} brand={brand} />
           ))}
         </div>
       )}
