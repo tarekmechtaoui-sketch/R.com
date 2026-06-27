@@ -28,7 +28,7 @@ export default function PromoBanner() {
             {t('promo.title2')}
           </h2>
           <Link
-            to="/products"
+            to="/promotions"
             className="inline-flex items-center gap-2 bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-white hover:text-charcoal active:scale-95 transition-all duration-200"
           >
             {t('promo.cta')}

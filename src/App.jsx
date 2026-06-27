@@ -13,6 +13,7 @@ import ProtectedRoute from './components/admin/ProtectedRoute'
 // Client Pages
 import HomePage from './pages/client/HomePage'
 import ProductsPage from './pages/client/ProductsPage'
+import PromotionsPage from './pages/client/PromotionsPage'
 import ProductDetailPage from './pages/client/ProductDetailPage'
 import CartPage from './pages/client/CartPage'
 import CheckoutPage from './pages/client/CheckoutPage'
@@ -27,6 +28,7 @@ import BrandsPage from './pages/admin/BrandsPage'
 import OrdersPage from './pages/admin/OrdersPage'
 import UsersPage from './pages/admin/UsersPage'
 import SettingsPage from './pages/admin/SettingsPage'
+import AdminPromotionsPage from './pages/admin/PromotionsPage'
 
 function ClientLayout({ children }) {
   return (
@@ -69,6 +71,7 @@ export default function App() {
               {/* ── Client Routes ── */}
               <Route path="/" element={<ClientLayout><HomePage /></ClientLayout>} />
               <Route path="/products" element={<ClientLayout><ProductsPage /></ClientLayout>} />
+              <Route path="/promotions" element={<ClientLayout><PromotionsPage /></ClientLayout>} />
               <Route path="/products/:id" element={<ClientLayout><ProductDetailPage /></ClientLayout>} />
               <Route path="/cart" element={<ClientLayout><CartPage /></ClientLayout>} />
               <Route path="/checkout" element={<ClientLayout><CheckoutPage /></ClientLayout>} />
@@ -80,6 +83,7 @@ export default function App() {
               <Route path="/admin/products" element={<ProtectedRoute><AdminProductsPage /></ProtectedRoute>} />
               <Route path="/admin/categories" element={<ProtectedRoute><CategoriesPage /></ProtectedRoute>} />
               <Route path="/admin/brands" element={<ProtectedRoute><BrandsPage /></ProtectedRoute>} />
+              <Route path="/admin/promotions" element={<ProtectedRoute><AdminPromotionsPage /></ProtectedRoute>} />
               <Route path="/admin/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
               <Route path="/admin/settings" element={<ProtectedRoute superAdminOnly><SettingsPage /></ProtectedRoute>} />

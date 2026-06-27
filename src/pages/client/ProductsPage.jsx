@@ -6,6 +6,7 @@ import { CardSkeleton, PageLoader } from '../../components/ui/LoadingSpinner'
 import EmptyState from '../../components/ui/EmptyState'
 import { useProducts } from '../../hooks/useProducts'
 import { useCategories } from '../../hooks/useCategories'
+import { useBrands } from '../../hooks/useBrands'
 import { debounce } from '../../utils/helpers'
 import { useLanguage } from '../../contexts/LanguageContext'
 
@@ -18,6 +19,9 @@ export default function ProductsPage() {
   const { t } = useLanguage()
   const { products, loading, error } = useProducts({ categorySlug: selectedCategory, brandSlug: selectedBrand, search })
   const { categories } = useCategories()
+  const { brands } = useBrands()
+
+  const selectedBrandObject = brands.find((brand) => brand.slug === selectedBrand)
 
   // Stable debounced search — created once, never recreated on re-render
   const debouncedSetSearch = useMemo(() => debounce(setSearch, 400), [])
@@ -68,6 +72,11 @@ export default function ProductsPage() {
         <p className="text-charcoal-400">
           {loading ? t('common.loading') : (products.length === 1 ? t('products.found_one') : t('products.found_many', { count: products.length }))}
         </p>
+        {selectedBrand !== 'all' && (
+          <p className="text-sm text-charcoal-500 mt-2">
+            Viewing products from <span className="font-semibold text-charcoal dark:text-white">{selectedBrandObject?.name || selectedBrand}</span>
+          </p>
+        )}
       </div>
 
       {/* Error */}
@@ -113,6 +122,33 @@ export default function ProductsPage() {
           </button>
         )}
       </div>
+
+      {/* Active filters */}
+      {(selectedCategory !== 'all' || selectedBrand !== 'all') && (
+        <div className="flex items-center gap-2 flex-wrap mb-6">
+          {selectedCategory !== 'all' && (
+            <button
+              onClick={() => handleCategory('all')}
+              className="px-4 py-2 rounded-full text-sm font-semibold text-charcoal-500 hover:text-charcoal bg-charcoal-100 dark:bg-charcoal-700 dark:text-charcoal-300 dark:hover:bg-charcoal-600 transition-all"
+            >
+              {categories.find((cat) => cat.slug === selectedCategory)?.name || 'Category'}
+            </button>
+          )}
+          {selectedBrand !== 'all' && (
+            <button
+              onClick={() => {
+                setSelectedBrand('all')
+                const params = new URLSearchParams(searchParams)
+                params.delete('brand')
+                setSearchParams(params)
+              }}
+              className="px-4 py-2 rounded-full text-sm font-semibold text-charcoal-500 hover:text-charcoal bg-charcoal-100 dark:bg-charcoal-700 dark:text-charcoal-300 dark:hover:bg-charcoal-600 transition-all"
+            >
+              {selectedBrandObject?.name || 'Brand'}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Category Tabs */}
       <div className="flex gap-2 flex-wrap mb-8">

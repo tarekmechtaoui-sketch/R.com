@@ -12,6 +12,7 @@ const navItems = [
   { label: 'Products', to: '/admin/products', icon: Package },
   { label: 'Categories', to: '/admin/categories', icon: Layers },
   { label: 'Brands', to: '/admin/brands', icon: Tag },
+  { label: 'Promotions', to: '/admin/promotions', icon: Tag },
   { label: 'Orders', to: '/admin/orders', icon: ShoppingBag },
   { label: 'Users', to: '/admin/users', icon: Users },
   { label: 'Settings', to: '/admin/settings', icon: Settings, superAdminOnly: true },

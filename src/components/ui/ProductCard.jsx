@@ -65,9 +65,25 @@ export default function ProductCard({ product }) {
             {product.name}
           </h3>
         </Link>
-        <p className="font-semibold text-charcoal dark:text-charcoal-200 text-sm">
-          {formatPrice(product.price)}
-        </p>
+        {product.promotion ? (
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-widest text-emerald-600 font-semibold">
+              {t('product_card.promo')}
+            </p>
+            <div className="flex items-center gap-3">
+              <span className="font-semibold text-charcoal dark:text-charcoal-200 text-sm line-through opacity-70">
+                {formatPrice(product.original_price)}
+              </span>
+              <span className="font-bold text-charcoal dark:text-white text-base">
+                {formatPrice(product.effective_price)}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <p className="font-semibold text-charcoal dark:text-charcoal-200 text-sm">
+            {formatPrice(product.price)}
+          </p>
+        )}
       </div>
     </div>
   )

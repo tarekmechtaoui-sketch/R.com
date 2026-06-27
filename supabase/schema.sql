@@ -46,6 +46,20 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Promotions
+CREATE TABLE IF NOT EXISTS promotions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+  name VARCHAR(255),
+  slug VARCHAR(255) UNIQUE,
+  old_price DECIMAL(10,2) NOT NULL,
+  new_price DECIMAL(10,2) NOT NULL,
+  start_at TIMESTAMPTZ NOT NULL,
+  end_at TIMESTAMPTZ NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Orders
 CREATE TABLE IF NOT EXISTS orders (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -90,6 +104,7 @@ CREATE TABLE IF NOT EXISTS profiles (
 
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand_id);
+CREATE INDEX IF NOT EXISTS idx_promotions_product ON promotions(product_id);
 CREATE INDEX IF NOT EXISTS idx_products_status ON products(status);
 CREATE INDEX IF NOT EXISTS idx_products_featured ON products(featured);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
@@ -146,6 +161,7 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE promotions ENABLE ROW LEVEL SECURITY;
 
 -- ── Categories RLS ──
 -- Anyone can read categories
@@ -167,6 +183,17 @@ CREATE POLICY "Public can read brands"
 -- Only authenticated users (admins) can modify
 CREATE POLICY "Admins can manage brands"
   ON brands FOR ALL
+  TO authenticated USING (true) WITH CHECK (true);
+
+-- ── Promotions RLS ──
+-- Anyone can read active promotions
+CREATE POLICY "Public can read active promotions"
+  ON promotions FOR SELECT
+  TO public USING (active = true AND start_at <= now() AND end_at >= now());
+
+-- Admins can manage promotions
+CREATE POLICY "Admins can manage promotions"
+  ON promotions FOR ALL
   TO authenticated USING (true) WITH CHECK (true);
 
 -- ── Products RLS ──
@@ -269,7 +296,7 @@ CREATE POLICY "Super admins can manage profiles"
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 
 -- Anon (guest customers): read store data, place orders
-GRANT SELECT ON products, categories, brands TO anon;
+GRANT SELECT ON products, categories, brands, promotions TO anon;
 GRANT INSERT, SELECT ON orders TO anon;
 GRANT INSERT, SELECT ON order_items TO anon;
 

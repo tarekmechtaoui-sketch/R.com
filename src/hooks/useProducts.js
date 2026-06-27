@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
-export function useProducts({ categorySlug, brandSlug, search, featured, limit } = {}) {
+export function useProducts({ categorySlug, brandSlug, search, featured, limit, promotionOnly } = {}) {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -12,7 +12,7 @@ export function useProducts({ categorySlug, brandSlug, search, featured, limit }
     try {
       let query = supabase
         .from('products')
-        .select('*, categories(id, name, slug), brands(id, name)')
+        .select('*, categories(id, name, slug), brands(id, name), promotions(*)')
         .eq('status', 'active')
         .order('created_at', { ascending: false })
 
@@ -39,13 +39,40 @@ export function useProducts({ categorySlug, brandSlug, search, featured, limit }
 
       const { data, error: err } = await query
       if (err) throw err
-      setProducts(data || [])
+      const now = new Date()
+      const normalized = (data || [])
+        .map((product) => {
+          const promotions = product.promotions || []
+          const activePromotion = promotions.find((promo) => {
+            if (!promo.active || !promo.start_at || !promo.end_at) return false
+            const start = new Date(promo.start_at)
+            const end = new Date(promo.end_at)
+            return start <= now && end >= now
+          })
+          const original_price = product.price
+          const effective_price = activePromotion ? activePromotion.new_price : product.price
+          return {
+            ...product,
+            promotions,
+            promotion: activePromotion || null,
+            original_price,
+            effective_price,
+            price: effective_price,
+          }
+        })
+        .filter((product) => !promotionOnly || product.promotion)
+
+      if (promotionOnly) {
+        normalized.sort((a, b) => a.price - b.price)
+      }
+
+      setProducts(normalized)
     } catch (err) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
-  }, [categorySlug, search, featured, limit])
+  }, [categorySlug, brandSlug, search, featured, limit, promotionOnly])
 
   useEffect(() => { fetchProducts() }, [fetchProducts])
 
@@ -63,11 +90,31 @@ export function useProduct(id) {
       setLoading(true)
       const { data, error: err } = await supabase
         .from('products')
-        .select('*, categories(id, name, slug), brands(id, name)')
+        .select('*, categories(id, name, slug), brands(id, name), promotions(*)')
         .eq('id', id)
         .single()
-      if (err) setError(err.message)
-      else setProduct(data)
+      if (err) {
+        setError(err.message)
+      } else if (data) {
+        const now = new Date()
+        const promotions = data.promotions || []
+        const activePromotion = promotions.find((promo) => {
+          if (!promo.active || !promo.start_at || !promo.end_at) return false
+          const start = new Date(promo.start_at)
+          const end = new Date(promo.end_at)
+          return start <= now && end >= now
+        })
+        const original_price = data.price
+        const effective_price = activePromotion ? activePromotion.new_price : data.price
+        setProduct({
+          ...data,
+          promotions,
+          promotion: activePromotion || null,
+          original_price,
+          effective_price,
+          price: effective_price,
+        })
+      }
       setLoading(false)
     }
     fetch()

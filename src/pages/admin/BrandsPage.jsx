@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Plus, Trash2, Edit2, RefreshCw, Tag } from 'lucide-react'
+import ImageUpload from '../../components/ui/ImageUpload'
 import Sidebar from '../../components/admin/Sidebar'
 import AdminHeader from '../../components/admin/AdminHeader'
 import Modal from '../../components/ui/Modal'
@@ -23,16 +24,19 @@ export default function BrandsPage() {
       ? brands.find((b) => b.id === editingId) || { name: '', description: '' }
       : { name: '', description: '' },
   })
+  const [logo, setLogo] = useState(null)
 
   const openCreateModal = () => {
     setEditingId(null)
     reset({ name: '', description: '' })
+    setLogo(null)
     setIsModalOpen(true)
   }
 
   const openEditModal = (brand) => {
     setEditingId(brand.id)
     reset({ name: brand.name, description: brand.description || '' })
+    setLogo(brand.image || null)
     setIsModalOpen(true)
   }
 
@@ -45,7 +49,7 @@ export default function BrandsPage() {
         .replace(/\s+/g, '-')
         .replace(/[^a-z0-9-]/g, '')
       
-      const brandData = { ...data, slug }
+      const brandData = { ...data, slug, image: logo }
       
       if (editingId) {
         await updateBrand(editingId, brandData)
@@ -56,6 +60,7 @@ export default function BrandsPage() {
       }
       setIsModalOpen(false)
       reset()
+      setLogo(null)
     } catch (err) {
       toast.error(err.message || 'Failed to save brand')
     } finally {
@@ -196,54 +201,44 @@ export default function BrandsPage() {
         title={editingId ? 'Edit Brand' : 'Create Brand'}
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-charcoal dark:text-white mb-2">
-              Brand Name *
-            </label>
-            <input
-              type="text"
-              placeholder="e.g., Apple"
-              {...register('name', {
-                required: 'Brand name is required',
-                minLength: { value: 2, message: 'Minimum 2 characters' },
-                maxLength: { value: 100, message: 'Maximum 100 characters' },
-              })}
-              className="w-full px-3 py-2 border border-charcoal-200 dark:border-charcoal-600 rounded-lg bg-white dark:bg-charcoal-700 text-charcoal dark:text-white placeholder-charcoal-400 dark:placeholder-charcoal-500 focus:ring-2 focus:ring-charcoal focus:border-transparent"
-            />
-            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-charcoal dark:text-white mb-2">Brand Name *</label>
+              <input
+                type="text"
+                placeholder="e.g., Apple"
+                {...register('name', {
+                  required: 'Brand name is required',
+                  minLength: { value: 2, message: 'Minimum 2 characters' },
+                  maxLength: { value: 100, message: 'Maximum 100 characters' },
+                })}
+                className="w-full px-3 py-2 border border-charcoal-200 dark:border-charcoal-600 rounded-lg bg-white dark:bg-charcoal-700 text-charcoal dark:text-white placeholder-charcoal-400 dark:placeholder-charcoal-500 focus:ring-2 focus:ring-charcoal focus:border-transparent"
+              />
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
 
-          <div>
-            <label className="block text-sm font-medium text-charcoal dark:text-white mb-2">
-              Description (optional)
-            </label>
-            <textarea
-              placeholder="Describe this brand..."
-              {...register('description', {
-                maxLength: { value: 500, message: 'Maximum 500 characters' },
-              })}
-              rows={3}
-              className="w-full px-3 py-2 border border-charcoal-200 dark:border-charcoal-600 rounded-lg bg-white dark:bg-charcoal-700 text-charcoal dark:text-white placeholder-charcoal-400 dark:placeholder-charcoal-500 focus:ring-2 focus:ring-charcoal focus:border-transparent"
-            />
-            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+              <label className="block text-sm font-medium text-charcoal dark:text-white mb-2 mt-4">Description (optional)</label>
+              <textarea
+                placeholder="Describe this brand..."
+                {...register('description', {
+                  maxLength: { value: 500, message: 'Maximum 500 characters' },
+                })}
+                rows={3}
+                className="w-full px-3 py-2 border border-charcoal-200 dark:border-charcoal-600 rounded-lg bg-white dark:bg-charcoal-700 text-charcoal dark:text-white placeholder-charcoal-400 dark:placeholder-charcoal-500 focus:ring-2 focus:ring-charcoal focus:border-transparent"
+              />
+              {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+            </div>
+
+            <div className="flex items-start">
+              <label className="block text-sm font-medium text-charcoal dark:text-white mb-2 mr-3">Logo</label>
+              <div>
+                <ImageUpload value={logo} onChange={setLogo} />
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setIsModalOpen(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : editingId ? 'Update' : 'Create'}
-            </Button>
+            <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)} disabled={isSubmitting}>Cancel</Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting}>{isSubmitting ? 'Saving...' : editingId ? 'Update' : 'Create'}</Button>
           </div>
         </form>
       </Modal>

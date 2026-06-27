@@ -103,9 +103,25 @@ export default function ProductDetailPage() {
           </h1>
 
           {/* Price */}
-          <p className="text-3xl font-black text-charcoal dark:text-white mb-6">
-            {formatPrice(product.price)}
-          </p>
+          {product.promotion ? (
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-semibold text-charcoal-500 dark:text-charcoal-300 line-through">
+                  {formatPrice(product.original_price)}
+                </span>
+                <span className="text-3xl font-black text-charcoal dark:text-white">
+                  {formatPrice(product.effective_price)}
+                </span>
+              </div>
+              <p className="text-sm uppercase tracking-widest text-emerald-600 font-semibold">
+                {t('product_card.promo')}
+              </p>
+            </div>
+          ) : (
+            <p className="text-3xl font-black text-charcoal dark:text-white mb-6">
+              {formatPrice(product.price)}
+            </p>
+          )}
 
           {/* Description */}
           {product.description && (

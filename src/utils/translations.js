@@ -13,6 +13,7 @@ export const translations = {
     // Navigation
     'nav.home': 'Home',
     'nav.products': 'Products',
+    'nav.promotions': 'Promotions',
     'nav.cart': 'Cart',
 
     // Hero
@@ -41,6 +42,7 @@ export const translations = {
     'promo.title1': 'Limited-Time',
     'promo.title2': 'Summer Steals!',
     'promo.cta': 'Explore Products',
+    'promo.description': 'Browse all active discounts and find products with the best deals.',
 
     // Best Sellers
     'bestsellers.title': 'Best Selling Products',
@@ -50,6 +52,7 @@ export const translations = {
 
     // Product Card
     'product_card.accessory': 'Accessory',
+    'product_card.promo': 'Promotion',
 
     // Products Page
     'products.title': 'All Products',
@@ -160,6 +163,7 @@ export const translations = {
     // Navigation
     'nav.home': 'Accueil',
     'nav.products': 'Produits',
+    'nav.promotions': 'Promotions',
     'nav.cart': 'Panier',
 
     // Hero
@@ -188,6 +192,7 @@ export const translations = {
     'promo.title1': 'Promotions',
     'promo.title2': 'Estivales !',
     'promo.cta': 'Explorer les produits',
+    'promo.description': 'Parcourez toutes les remises actives et trouvez les meilleurs produits en promotion.',
 
     // Best Sellers
     'bestsellers.title': 'Meilleures ventes',
@@ -197,6 +202,7 @@ export const translations = {
 
     // Product Card
     'product_card.accessory': 'Accessoire',
+    'product_card.promo': 'Promotion',
 
     // Products Page
     'products.title': 'Tous les produits',
@@ -307,6 +313,7 @@ export const translations = {
     // Navigation
     'nav.home': 'الرئيسية',
     'nav.products': 'المنتجات',
+    'nav.promotions': 'العروض',
     'nav.cart': 'السلة',
 
     // Hero
@@ -335,6 +342,7 @@ export const translations = {
     'promo.title1': 'تخفيضات صيفية',
     'promo.title2': 'لا تفوّتها!',
     'promo.cta': 'استكشف المنتجات',
+    'promo.description': 'تصفح جميع الخصومات النشطة واعثر على أفضل المنتجات بعروض خاصة.',
 
     // Best Sellers
     'bestsellers.title': 'الأكثر مبيعاً',
@@ -344,6 +352,7 @@ export const translations = {
 
     // Product Card
     'product_card.accessory': 'ملحق',
+    'product_card.promo': 'عرض',
 
     // Products Page
     'products.title': 'جميع المنتجات',

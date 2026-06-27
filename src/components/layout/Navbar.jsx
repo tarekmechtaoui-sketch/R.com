@@ -15,6 +15,7 @@ export default function Navbar() {
   const navLinks = [
     { label: t('nav.home'), to: '/' },
     { label: t('nav.products'), to: '/products' },
+    { label: t('nav.promotions'), to: '/promotions' },
   ]
 
   useEffect(() => {

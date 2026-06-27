@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Plus, Trash2, Edit2, RefreshCw, Layers } from 'lucide-react'
+import ImageUpload from '../../components/ui/ImageUpload'
 import Sidebar from '../../components/admin/Sidebar'
 import AdminHeader from '../../components/admin/AdminHeader'
 import Modal from '../../components/ui/Modal'
@@ -23,16 +24,19 @@ export default function CategoriesPage() {
       ? categories.find((c) => c.id === editingId) || { name: '', description: '' }
       : { name: '', description: '' },
   })
+  const [logo, setLogo] = useState(null)
 
   const openCreateModal = () => {
     setEditingId(null)
     reset({ name: '', description: '' })
+    setLogo(null)
     setIsModalOpen(true)
   }
 
   const openEditModal = (category) => {
     setEditingId(category.id)
     reset({ name: category.name, description: category.description || '' })
+    setLogo(category.image || null)
     setIsModalOpen(true)
   }
 
@@ -45,7 +49,7 @@ export default function CategoriesPage() {
         .replace(/\s+/g, '-')
         .replace(/[^a-z0-9-]/g, '')
       
-      const categoryData = { ...data, slug }
+      const categoryData = { ...data, slug, image: logo }
       
       if (editingId) {
         await updateCategory(editingId, categoryData)
@@ -56,6 +60,7 @@ export default function CategoriesPage() {
       }
       setIsModalOpen(false)
       reset()
+      setLogo(null)
     } catch (err) {
       toast.error(err.message || 'Failed to save category')
     } finally {
@@ -213,19 +218,26 @@ export default function CategoriesPage() {
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-charcoal dark:text-white mb-2">
-              Description (optional)
-            </label>
-            <textarea
-              placeholder="Describe this category..."
-              {...register('description', {
-                maxLength: { value: 500, message: 'Maximum 500 characters' },
-              })}
-              rows={3}
-              className="w-full px-3 py-2 border border-charcoal-200 dark:border-charcoal-600 rounded-lg bg-white dark:bg-charcoal-700 text-charcoal dark:text-white placeholder-charcoal-400 dark:placeholder-charcoal-500 focus:ring-2 focus:ring-charcoal focus:border-transparent"
-            />
-            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-charcoal dark:text-white mb-2">Description (optional)</label>
+              <textarea
+                placeholder="Describe this category..."
+                {...register('description', {
+                  maxLength: { value: 500, message: 'Maximum 500 characters' },
+                })}
+                rows={3}
+                className="w-full px-3 py-2 border border-charcoal-200 dark:border-charcoal-600 rounded-lg bg-white dark:bg-charcoal-700 text-charcoal dark:text-white placeholder-charcoal-400 dark:placeholder-charcoal-500 focus:ring-2 focus:ring-charcoal focus:border-transparent"
+              />
+              {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+            </div>
+
+            <div className="flex items-start">
+              <label className="block text-sm font-medium text-charcoal dark:text-white mb-2 mr-3">Logo</label>
+              <div>
+                <ImageUpload value={logo} onChange={setLogo} />
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
